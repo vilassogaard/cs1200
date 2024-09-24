@@ -14,6 +14,7 @@ class BinarySearchTree:
 
     @property
     def size(self):
+         print("hello")
          return self._size
        
      # a setter function
