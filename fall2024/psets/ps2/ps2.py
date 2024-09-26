@@ -142,6 +142,7 @@ class BinarySearchTree:
        11 
     '''
     def rotate(self, direction, child_side):
+        # node names match up with those in Lecture 5 Notes
         if child_side == "L":
             if direction == "L":
                 x = self.left
@@ -149,12 +150,18 @@ class BinarySearchTree:
                 self.left = y
                 x.right = y.left
                 y.left = x
+                y.size, x.size = x.size, x.size - y.size
+                if x.right is not None:
+                    x.size += x.right.size
             else:
                 y = self.left
                 x = y.left
                 self.left = x
                 y.left = x.right
                 x.right = y
+                x.size, y.size = y.size, y.size - x.size
+                if y.left is not None:
+                    y.size += y.left.size
         else:
             if direction == "L":
                 x = self.right
@@ -162,13 +169,21 @@ class BinarySearchTree:
                 self.right = y
                 x.right = y.left
                 y.left = x
+                y.size, x.size = x.size, x.size - y.size
+                if x.right is not None:
+                    x.size += x.right.size
             else:
                 y = self.right
                 x = y.left
                 self.right = x
                 y.left = x.right
                 x.right = y
+                x.size, y.size = y.size, y.size - x.size
+                if y.left is not None:
+                    y.size += y.left.size
         return self
+        
+
 
     def print_bst(self):
         if self.left is not None:
