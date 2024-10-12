@@ -31,12 +31,30 @@ returns: An key-value pair (Kj, Vj) such that Kj is an i’th smallest key.
 
 
 def QuickSelect(arr, i):
-    # Your code here
+    n = len(arr)
+    
+    if n <= 1:
+        return arr[0]
 
-    # Feel free to use get_random_index(arr) or get_random_int(start_inclusive, end_inclusive)
-    # ... see the helper functions below
-    pass
-    return (0, -1)
+    p = get_random_int(0, n-1)
+    pivot = arr[p][0]
+    
+    arr_smaller, arr_larger, arr_equal = [], [], []
+    for kv in arr:
+        if kv[0] < pivot:
+            arr_smaller.append(kv)
+        elif kv[0] > pivot:
+            arr_larger.append(kv)
+        else:
+            arr_equal.append(kv)
+
+    n_smaller, n_equal = len(arr_smaller), len(arr_equal)
+    if i < n_smaller:
+        return QuickSelect(arr_smaller, i)
+    elif i >= n_smaller + n_equal:
+        return QuickSelect(arr_larger, i - n_smaller - n_equal)
+    else:
+        return arr_equal[0]
 
 
 '''
@@ -52,10 +70,14 @@ NOTE: This is different from the QuickSelect definition. This function takes in 
 
 
 def MergeSortSelect(arr, query_list):
-    # Only call MergeSort once
-    # ... MergeSort has already been implemented for you (see below)
-    pass
-    return [(0, -1)] * len(query_list)  # replace this line with your return
+    n = len(arr)
+    sorted_arr = MergeSort(arr)
+
+    res = []
+    for qi in query_list:
+        res.append(sorted_arr[qi])
+
+    return res
 
 
 ##################################
@@ -67,11 +89,11 @@ def MergeSortSelect(arr, query_list):
 
 def experiments():
     # Edit this parameter
-    k = [1, 1, 1, 1, 1]
+    k = [30, 32, 35, 37, 39, 42]
 
     # Feel free to edit these initial parameters
 
-    RUNS = 20  # Number of runs for each trial; more runs means better distributions approximation but longer experiment
+    RUNS = 30  # Number of runs for each trial; more runs means better distributions approximation but longer experiment
     HEIGHT = 1.5  # Height of a chart
     WIDTH = 3   # Width of a chart
     # Determines if subcharts share the same axis scale/limits
