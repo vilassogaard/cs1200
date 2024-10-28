@@ -151,6 +151,9 @@ def bron_kerbosch_max_indep_set(G, R, P, X):
 # Precondition: Assumes that the precolored_nodes form an independent set.
 # If successful, modifies G.colors and returns the coloring.
 # If no coloring is possible, resets all of G's colors to None and returns None.
+
+
+
 def bfs_2_coloring(G, precolored_nodes=None):
     # Assign every precolored node to have color 2
     # Initialize visited set to contain precolored nodes if they exist
@@ -167,9 +170,35 @@ def bfs_2_coloring(G, precolored_nodes=None):
     
     # TODO: Complete this function by implementing two-coloring using the colors 0 and 1.
     # If there is no valid coloring, reset all the colors to None using G.reset_colors()
-    
-    G.reset_colors()
-    return None
+    # Iterate through all *unvisited* nodes to handle graphs that arent connected
+    for start_node in range(G.N):
+        if start_node not in visited:
+            # Start BFS
+            F = {start_node} # Frontierrrr
+            G.colors[start_node] = 0 
+            visited.add(start_node)
+
+            while F:
+                next_frontier = set()
+
+                for node in F:
+                    current_color = G.colors[node]
+                    next_color = 1 - current_color # Alternate current color between 0 and 1
+
+                    # Check all neighbors to create the next frontier!
+                    for neighbor in G.edges[node]:
+                        if neighbor not in visited:
+                            G.colors[neighbor] = next_color
+                            visited.add(neighbor)
+                            next_frontier.add(neighbor)
+                        elif G.colors[neighbor] == current_color:
+                            # If we accidentally set a neighbor to the same color, the whole coloring is invalid
+                            G.reset_colors()
+                            return None
+
+                F = next_frontier # Move to the next frontier
+
+    return G.colors
 
 
 
@@ -186,8 +215,21 @@ def bfs_2_coloring(G, precolored_nodes=None):
 # If successful, modifies G.colors and returns the coloring.
 # If no coloring is possible, resets all of G's colors to None and returns None.
 def iset_bfs_3_coloring(G):
-    # TODO: Complete this function.
+    # Reset colors to start fresh
+    G.reset_colors()
 
+    # Iterate through all biggest independent sets
+    for independent_set in get_maximal_isets(G):
+        # Copy graph (which doesn't copy colors)
+        G_copy = G.clone()
+        # Color current independent set with color 2
+        for node in independent_set:
+            G_copy.colors[node] = 2 
+        # Try to 2-color the rest of the graph with our independent set precolored
+        result = bfs_2_coloring(G_copy, precolored_nodes=independent_set)
+        if result is not None:
+            return G_copy.colors
+    # If no valid coloring was found for any of the independent sets:
     G.reset_colors()
     return None
 
