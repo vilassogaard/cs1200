@@ -212,6 +212,21 @@ def sat_3_coloring(G):
     solver = Glucose3()
 
     # TODO: Add the clauses to the solver
+    def var (v, i):
+        return v * 3 + i + 1
+
+    for node in range(G.N):
+        color_clause = []
+        for color in range(1, 4): # this fixes debugging probs w var named 0
+            color_clause.append(node*10 + color)
+            for edgeNode in G.edges[node]:
+                edge_clause = []
+                edge_clause.append(-1 *( node*10 + color))
+                edge_clause.append(-1 * (edgeNode *10 + color))
+                #print(edge_clause)
+                solver.add_clause(edge_clause)
+        #print(color_clause)
+        solver.add_clause(color_clause)
 
     # Attempt to solve, return None if no solution possible
     if not solver.solve():
@@ -222,6 +237,11 @@ def sat_3_coloring(G):
     solution = solver.get_model()
 
     # TODO: If a solution is found, convert it into a coloring and update G.colors
+    for i in solution:
+        if i > 0:
+            node = i // 10
+            color = i % 10
+            G.colors[node] = color - 1
 
     return G.colors
 
